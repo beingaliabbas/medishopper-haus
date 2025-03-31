@@ -44,7 +44,7 @@ const AdminOrders = () => {
         // Update local state
         setOrders(prevOrders => 
           prevOrders.map(order => 
-            order._id === orderId ? { ...order, status } : order
+            order._id === orderId ? { ...order, status } as IOrder : order
           )
         );
         
