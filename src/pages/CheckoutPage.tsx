@@ -25,10 +25,10 @@ const CheckoutPage = () => {
       address: '',
       city: '',
       zipCode: '',
-      state: '', // Added missing fields
-      country: '' // Added missing fields
+      state: '',
+      country: ''
     },
-    paymentMethod: 'credit-card' // Fixed to match type
+    paymentMethod: 'credit-card'
   });
   const [submitting, setIsSubmitting] = useState(false);
   const [subtotal, setSubtotal] = useState(0);
@@ -105,7 +105,7 @@ const CheckoutPage = () => {
         country: formData.shippingInfo.country || 'United States'
       };
       
-      // Create order data object
+      // Create order data object with only the fields expected by the API
       const orderData = {
         orderNumber: Math.floor(Math.random() * 1000000).toString().padStart(6, '0'),
         customerInfo,
@@ -117,7 +117,7 @@ const CheckoutPage = () => {
         total: subtotal + shipping + tax
       };
       
-      // Submit order to API (note: we removed the status field as it's set by default in the model)
+      // Submit order to API
       const result = await createOrder(orderData);
       
       if (result && result._id) {
@@ -189,6 +189,10 @@ const CheckoutPage = () => {
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="paypal" id="paypal" />
                 <Label htmlFor="paypal">PayPal</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="cash-on-delivery" id="cash-on-delivery" />
+                <Label htmlFor="cash-on-delivery">Cash on Delivery</Label>
               </div>
             </RadioGroup>
           </div>

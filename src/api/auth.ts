@@ -1,11 +1,11 @@
 
-// Simple browser-compatible authentication
+// Browser-compatible authentication implementation
 import Admin from '../models/Admin';
 import { connectDB, disconnectDB } from '../utils/db';
 
 const JWT_SECRET = 'your-secret-key'; // In production, use environment variables
 
-// Simple token generation - not for production use
+// Simple token generation - browser compatible version
 function generateToken(payload: any): string {
   const header = { alg: 'HS256', typ: 'JWT' };
   const encodedHeader = btoa(JSON.stringify(header));
@@ -23,7 +23,7 @@ function generateToken(payload: any): string {
   return `${encodedHeader}.${encodedPayload}.${signature}`;
 }
 
-// Simple token verification - not for production use
+// Simple token verification - browser compatible version
 function verifySimpleToken(token: string): any | null {
   try {
     const parts = token.split('.');

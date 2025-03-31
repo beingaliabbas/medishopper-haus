@@ -2,7 +2,33 @@
 import Order, { IOrder } from '../models/Order';
 import { connectDB, disconnectDB } from '../utils/db';
 
-export async function createOrder(orderData: Omit<IOrder, '_id' | 'status' | 'createdAt' | 'updatedAt'>): Promise<IOrder> {
+export async function createOrder(orderData: {
+  orderNumber: string;
+  customerInfo: {
+    fullName: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  items: Array<{
+    productId: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image: string;
+    selectedSize?: string;
+    selectedColor?: string;
+  }>;
+  paymentMethod: string;
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+}): Promise<IOrder> {
   try {
     await connectDB();
     const order = new Order({
