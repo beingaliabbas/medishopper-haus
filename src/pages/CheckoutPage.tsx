@@ -12,6 +12,8 @@ import { toast } from '@/components/ui/use-toast';
 import { ShippingInfo, CheckoutFormData, PaymentMethod } from '@/types';
 import { createOrder } from '@/api/orders';
 import { IOrderItem } from '@/models/Order';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Loader2 } from 'lucide-react';
 
 const CheckoutPage = () => {
   const { cart, getCartTotal, clearCart } = useCart();
@@ -31,6 +33,7 @@ const CheckoutPage = () => {
     paymentMethod: 'credit-card'
   });
   const [submitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
   const [subtotal, setSubtotal] = useState(0);
   const shipping = 10;
   const tax = subtotal * 0.08;
@@ -57,34 +60,61 @@ const CheckoutPage = () => {
     }));
   };
 
-  const handleSubmitOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateForm = (): boolean => {
+    setFormError('');
     
-    if (!formData.shippingInfo.fullName || 
-        !formData.shippingInfo.email ||
-        !formData.shippingInfo.phone ||
-        !formData.shippingInfo.address ||
-        !formData.shippingInfo.city ||
-        !formData.shippingInfo.zipCode ||
-        !formData.paymentMethod) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive"
-      });
-      return;
+    if (!formData.shippingInfo.fullName.trim()) {
+      setFormError('Full name is required');
+      return false;
+    }
+    
+    if (!formData.shippingInfo.email.trim()) {
+      setFormError('Email is required');
+      return false;
+    }
+    
+    if (!formData.shippingInfo.phone.trim()) {
+      setFormError('Phone number is required');
+      return false;
+    }
+    
+    if (!formData.shippingInfo.address.trim()) {
+      setFormError('Address is required');
+      return false;
+    }
+    
+    if (!formData.shippingInfo.city.trim()) {
+      setFormError('City is required');
+      return false;
+    }
+    
+    if (!formData.shippingInfo.zipCode.trim()) {
+      setFormError('Zip code is required');
+      return false;
     }
     
     if (cart.length === 0) {
+      setFormError('Your cart is empty');
+      return false;
+    }
+    
+    return true;
+  };
+
+  const handleSubmitOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
       toast({
-        title: "Empty Cart",
-        description: "Your cart is empty. Add items before checking out.",
+        title: "Validation Error",
+        description: formError,
         variant: "destructive"
       });
       return;
     }
     
     setIsSubmitting(true);
+    setFormError('');
     
     try {
       // Create order items
@@ -105,9 +135,12 @@ const CheckoutPage = () => {
         country: formData.shippingInfo.country || 'United States'
       };
       
+      // Generate a random order number
+      const orderNumber = `ORD-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
+      
       // Create order data object with only the fields expected by the API
       const orderData = {
-        orderNumber: Math.floor(Math.random() * 1000000).toString().padStart(6, '0'),
+        orderNumber,
         customerInfo,
         items: orderItems,
         paymentMethod: formData.paymentMethod,
@@ -117,19 +150,30 @@ const CheckoutPage = () => {
         total: subtotal + shipping + tax
       };
       
+      console.log('Submitting order data:', orderData);
+      
       // Submit order to API
       const result = await createOrder(orderData);
       
       if (result && result._id) {
+        console.log('Order created successfully:', result);
+        
         // Clear cart and navigate to confirmation page
         localStorage.setItem('lastOrder', JSON.stringify(result));
         clearCart();
+        
+        toast({
+          title: "Order Successful!",
+          description: `Your order #${orderNumber} has been placed.`,
+        });
+        
         navigate('/order-confirmation');
       } else {
-        throw new Error('Failed to create order');
+        throw new Error('Failed to create order - no order ID returned');
       }
     } catch (error) {
       console.error('Order submission error:', error);
+      setFormError('Failed to process your order. Please try again.');
       toast({
         title: "Order Failed",
         description: "Failed to process your order. Please try again.",
@@ -147,6 +191,13 @@ const CheckoutPage = () => {
           <CardTitle className="text-2xl font-bold">Checkout</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
+          {formError && (
+            <Alert variant="destructive">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{formError}</AlertDescription>
+            </Alert>
+          )}
+        
           <div className="grid gap-2">
             <h2 className="text-lg font-semibold">Shipping Information</h2>
             <Separator />
@@ -223,7 +274,14 @@ const CheckoutPage = () => {
         </CardContent>
         <CardFooter>
           <Button className="w-full" onClick={handleSubmitOrder} disabled={submitting}>
-            {submitting ? 'Submitting Order...' : 'Submit Order'}
+            {submitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              'Submit Order'
+            )}
           </Button>
         </CardFooter>
       </Card>

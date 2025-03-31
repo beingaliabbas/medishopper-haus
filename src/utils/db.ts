@@ -1,23 +1,14 @@
 
-import mongoose from 'mongoose';
+// Mock database connection for browser environment
+// In a real application, this would be API calls to a backend server
 
-const MONGODB_URI = 'mongodb://localhost:27017/medishopper';
-
+// Mock implementation for browser environment
 export const connectDB = async () => {
-  try {
-    await mongoose.connect(MONGODB_URI);
-    console.log('MongoDB connected');
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
-  }
+  console.log('Mock DB connection established');
+  return Promise.resolve();
 };
 
 export const disconnectDB = async () => {
-  try {
-    await mongoose.disconnect();
-    console.log('MongoDB disconnected');
-  } catch (error) {
-    console.error('MongoDB disconnection error:', error);
-  }
+  console.log('Mock DB connection closed');
+  return Promise.resolve();
 };
