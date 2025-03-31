@@ -6,8 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from '@/components/ui/use-toast';
-import { LogOut, Package, RefreshCw, Search } from 'lucide-react';
-import { getOrders, updateOrderStatus } from '@/api/auth';
+import { LogOut, Package, RefreshCw } from 'lucide-react';
+import { getOrders, updateOrderStatus } from '@/api/orders';
 import { IOrder } from '@/models/Order';
 
 const AdminOrders = () => {
@@ -38,19 +38,21 @@ const AdminOrders = () => {
 
   const handleStatusChange = async (orderId: string, status: IOrder['status']) => {
     try {
-      await updateOrderStatus(orderId, status);
+      const updatedOrder = await updateOrderStatus(orderId, status);
       
-      // Update local state
-      setOrders(prevOrders => 
-        prevOrders.map(order => 
-          order._id === orderId ? { ...order, status } : order
-        )
-      );
-      
-      toast({
-        title: "Status Updated",
-        description: `Order status has been updated to ${status}.`
-      });
+      if (updatedOrder) {
+        // Update local state
+        setOrders(prevOrders => 
+          prevOrders.map(order => 
+            order._id === orderId ? { ...order, status } : order
+          )
+        );
+        
+        toast({
+          title: "Status Updated",
+          description: `Order status has been updated to ${status}.`
+        });
+      }
     } catch (error) {
       console.error('Error updating status:', error);
       toast({

@@ -10,6 +10,7 @@ import { useCart } from '@/hooks/use-cart';
 import { toast } from '@/components/ui/use-toast';
 import { ShippingInfo, CheckoutFormData, PaymentMethod } from '@/types';
 import { createOrder } from '@/api/orders';
+import { IOrderItem } from '@/models/Order';
 
 const CheckoutPage = () => {
   const { cart, getCartTotal, clearCart } = useCart();
@@ -102,19 +103,22 @@ const CheckoutPage = () => {
     setIsSubmitting(true);
     
     try {
+      // Create order items
+      const orderItems: IOrderItem[] = cart.map(item => ({
+        productId: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image,
+        selectedSize: item.selectedSize,
+        selectedColor: item.selectedColor
+      }));
+      
       // Create order data object
       const orderData = {
         orderNumber: Math.floor(Math.random() * 1000000).toString().padStart(6, '0'),
         customerInfo: formData.shippingInfo,
-        items: cart.map(item => ({
-          productId: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image,
-          selectedSize: item.selectedSize,
-          selectedColor: item.selectedColor
-        })),
+        items: orderItems,
         paymentMethod: formData.paymentMethod,
         subtotal,
         shipping,
