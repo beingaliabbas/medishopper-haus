@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,9 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { CheckCircle, Package, Truck, Calendar } from 'lucide-react';
 
 const OrderConfirmation = () => {
-  const orderNumber = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+  const location = useLocation();
+  const orderNumber = location.state?.orderNumber || 
+    Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
   
   return (
     <div className="min-h-screen flex flex-col">

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -10,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useCart } from '@/hooks/use-cart';
 import { toast } from '@/components/ui/use-toast';
 import { ShippingInfo, CheckoutFormData, PaymentMethod } from '@/types';
+import { createOrder } from '@/api/orders';
 
 const CheckoutPage = () => {
   const { cart, getCartTotal, clearCart } = useCart();
@@ -92,7 +92,7 @@ const CheckoutPage = () => {
     return true;
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {
@@ -101,25 +101,48 @@ const CheckoutPage = () => {
     
     setIsSubmitting(true);
     
-    // Simulate order processing
-    setTimeout(() => {
-      // In a real app, you would send the order to a backend API
-      console.log('Order submitted:', {
-        cart,
-        formData,
-        total,
-      });
+    try {
+      // Create order data object
+      const orderData = {
+        orderNumber: Math.floor(Math.random() * 1000000).toString().padStart(6, '0'),
+        customerInfo: formData.shippingInfo,
+        items: cart.map(item => ({
+          productId: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+          selectedSize: item.selectedSize,
+          selectedColor: item.selectedColor
+        })),
+        paymentMethod: formData.paymentMethod,
+        subtotal,
+        shipping,
+        tax,
+        total
+      };
+      
+      // Save order to MongoDB
+      await createOrder(orderData);
       
       clearCart();
-      setIsSubmitting(false);
       
       toast({
         title: "Order Placed Successfully!",
         description: "Thank you for your order. We'll process it right away.",
       });
       
-      navigate('/order-confirmation');
-    }, 1500);
+      navigate('/order-confirmation', { state: { orderNumber: orderData.orderNumber } });
+    } catch (error) {
+      console.error('Error placing order:', error);
+      toast({
+        title: "Order Failed",
+        description: "There was an error processing your order. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   if (cart.length === 0) {
