@@ -10,9 +10,12 @@ interface ProductGridProps {
 
 const ProductGrid: React.FC<ProductGridProps> = ({ products, title }) => {
   return (
-    <section className="py-8">
+    <section className="py-10">
       {title && (
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">{title}</h2>
+        <div className="mb-8 flex items-center">
+          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+          <div className="ml-4 flex-grow h-0.5 bg-gray-100 rounded"></div>
+        </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product) => (
