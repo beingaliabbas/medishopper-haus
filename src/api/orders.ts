@@ -2,10 +2,13 @@
 import Order, { IOrder } from '../models/Order';
 import { connectDB, disconnectDB } from '../utils/db';
 
-export async function createOrder(orderData: Omit<IOrder, 'status' | 'createdAt' | 'updatedAt'>): Promise<IOrder> {
+export async function createOrder(orderData: Omit<IOrder, '_id' | 'status' | 'createdAt' | 'updatedAt'>): Promise<IOrder> {
   try {
     await connectDB();
-    const order = new Order(orderData);
+    const order = new Order({
+      ...orderData,
+      status: 'confirmed'
+    });
     await order.save();
     return order;
   } catch (error) {

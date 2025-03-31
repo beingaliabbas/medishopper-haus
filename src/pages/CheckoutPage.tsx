@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/hooks/use-cart';
@@ -23,9 +24,11 @@ const CheckoutPage = () => {
       phone: '',
       address: '',
       city: '',
-      zipCode: ''
+      zipCode: '',
+      state: '', // Added missing fields
+      country: '' // Added missing fields
     },
-    paymentMethod: 'credit_card'
+    paymentMethod: 'credit-card' // Fixed to match type
   });
   const [submitting, setIsSubmitting] = useState(false);
   const [subtotal, setSubtotal] = useState(0);
@@ -95,20 +98,26 @@ const CheckoutPage = () => {
         selectedColor: item.selectedColor
       }));
       
+      // Set default values for state and country if not provided
+      const customerInfo = {
+        ...formData.shippingInfo,
+        state: formData.shippingInfo.state || 'N/A',
+        country: formData.shippingInfo.country || 'United States'
+      };
+      
       // Create order data object
       const orderData = {
         orderNumber: Math.floor(Math.random() * 1000000).toString().padStart(6, '0'),
-        customerInfo: formData.shippingInfo,
+        customerInfo,
         items: orderItems,
         paymentMethod: formData.paymentMethod,
         subtotal,
         shipping,
         tax,
-        total: subtotal + shipping + tax,
-        status: "confirmed" as const
+        total: subtotal + shipping + tax
       };
       
-      // Submit order to API
+      // Submit order to API (note: we removed the status field as it's set by default in the model)
       const result = await createOrder(orderData);
       
       if (result && result._id) {
@@ -172,10 +181,10 @@ const CheckoutPage = () => {
           <div className="grid gap-2">
             <h2 className="text-lg font-semibold">Payment Method</h2>
             <Separator />
-            <RadioGroup defaultValue="credit_card" className="flex flex-col space-y-1 mt-2" onValueChange={handlePaymentMethodChange}>
+            <RadioGroup defaultValue="credit-card" className="flex flex-col space-y-1 mt-2" onValueChange={handlePaymentMethodChange}>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="credit_card" id="credit_card" />
-                <Label htmlFor="credit_card">Credit Card</Label>
+                <RadioGroupItem value="credit-card" id="credit-card" />
+                <Label htmlFor="credit-card">Credit Card</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="paypal" id="paypal" />
