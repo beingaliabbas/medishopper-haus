@@ -15,16 +15,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem('admin-token');
-      console.log('Checking authentication with token:', token ? 'Token exists' : 'No token');
       
       if (!token) {
         setIsAuthenticated(false);
         return;
       }
       
-      // Use the verifyToken function to check if token exists
       const decodedToken = verifyToken(token);
-      console.log('Token verification result:', decodedToken ? 'Valid' : 'Invalid');
       setIsAuthenticated(!!decodedToken);
     };
     
@@ -40,11 +37,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    console.log('Not authenticated, redirecting to login');
     return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
 
-  console.log('Authenticated, rendering protected content');
   return <>{children}</>;
 };
 

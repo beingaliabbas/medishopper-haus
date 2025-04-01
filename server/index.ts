@@ -5,7 +5,6 @@ import morgan from 'morgan';
 import { connectDB } from './utils/db';
 import orderRoutes from './routes/orderRoutes';
 import authRoutes from './routes/authRoutes';
-import { initAdminUser } from './utils/initAdmin';
 
 // Initialize express app
 const app = express();
@@ -27,10 +26,7 @@ app.get('/', (req, res) => {
 
 // Connect to MongoDB and start server
 connectDB()
-  .then(async () => {
-    // Initialize admin user after DB connection
-    await initAdminUser();
-    
+  .then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });

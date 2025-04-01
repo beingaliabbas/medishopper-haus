@@ -3,12 +3,27 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import Admin from '../models/Admin';
-import { initAdminUser } from '../utils/initAdmin';
 
 const JWT_SECRET = 'medishopper-secret-key'; // In production, use environment variable
 
-// Initialize admin user - exported to be called during server startup
-export { initAdminUser };
+// Initialize admin user
+export const initAdminUser = async () => {
+  try {
+    const adminCount = await Admin.countDocuments();
+    
+    if (adminCount === 0) {
+      const admin = new Admin({
+        username: 'admin',
+        password: 'admin123' // Will be hashed by pre-save hook
+      });
+      
+      await admin.save();
+      console.log('Admin user created successfully');
+    }
+  } catch (error) {
+    console.error('Error initializing admin user:', error);
+  }
+};
 
 // Admin login
 export const loginAdmin = async (req: Request, res: Response) => {
@@ -20,22 +35,15 @@ export const loginAdmin = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Please provide username and password' });
     }
     
-    console.log(`Attempting to find admin with username: ${username}`);
-    
     // Find admin by username
     const admin = await Admin.findOne({ username });
     
     if (!admin) {
-      console.log('Admin not found');
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     
-    console.log('Admin found, comparing password');
-    
     // Compare password
-    const isPasswordValid = await bcrypt.compare(password, admin.password);
-    
-    console.log('Password valid:', isPasswordValid);
+    const isPasswordValid = await admin.comparePassword(password);
     
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -47,8 +55,6 @@ export const loginAdmin = async (req: Request, res: Response) => {
       JWT_SECRET,
       { expiresIn: '1d' }
     );
-    
-    console.log('Login successful, token generated');
     
     res.json({
       token,

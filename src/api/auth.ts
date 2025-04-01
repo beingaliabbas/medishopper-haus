@@ -1,50 +1,103 @@
 
-// API functions for authentication
-const API_URL = 'http://localhost:5000/api';
+// Browser-compatible authentication implementation
+import Admin from '../models/Admin';
+import { connectDB, disconnectDB } from '../utils/db';
 
-// Function to login admin
-export async function loginAdmin(username: string, password: string): Promise<string | null> {
+const JWT_SECRET = 'your-secret-key'; // In production, use environment variables
+
+// Simple token generation - browser compatible version
+function generateToken(payload: any): string {
+  const header = { alg: 'HS256', typ: 'JWT' };
+  const encodedHeader = btoa(JSON.stringify(header));
+  const encodedPayload = btoa(JSON.stringify(payload));
+  
+  // In a real app, this would use a proper signing algorithm
+  // This is a simplified version for demonstration
+  const signature = btoa(
+    JSON.stringify({ 
+      secret: JWT_SECRET, 
+      data: encodedHeader + '.' + encodedPayload 
+    })
+  );
+  
+  return `${encodedHeader}.${encodedPayload}.${signature}`;
+}
+
+// Simple token verification - browser compatible version
+function verifySimpleToken(token: string): any | null {
   try {
-    console.log('Attempting login with:', { username, password });
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
     
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ username, password })
-    });
+    // In a real app, we would verify the signature
+    // This is a simplified version for demonstration
+    const payload = JSON.parse(atob(parts[1]));
     
-    const data = await response.json();
-    console.log('Login response:', data);
-    
-    if (!response.ok) {
-      console.error('Login failed:', data.message);
+    // Check if token is expired
+    if (payload.exp && payload.exp < Date.now() / 1000) {
       return null;
     }
     
-    return data.token;
-  } catch (error) {
-    console.error('Login error:', error);
-    return null;
-  }
-}
-
-// Function to verify token on client-side
-export function verifyToken(token: string): { id: string; username: string } | null {
-  if (!token) return null;
-  
-  try {
-    // This is a simplified check just to see if the token exists and is not expired
-    // The actual verification happens on the server
-    return { id: 'admin-id', username: 'admin' };
+    return payload;
   } catch (error) {
     console.error('Token verification error:', error);
     return null;
   }
 }
 
-// Initialize admin user - this is now handled by the server
+export async function loginAdmin(username: string, password: string): Promise<string | null> {
+  try {
+    await connectDB();
+    const admin = await Admin.findOne({ username });
+    
+    if (!admin) {
+      return null;
+    }
+    
+    const isMatch = await admin.comparePassword(password);
+    
+    if (!isMatch) {
+      return null;
+    }
+    
+    const payload = {
+      id: admin._id,
+      username: admin.username,
+      exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 1 day expiration
+    };
+    
+    const token = generateToken(payload);
+    return token;
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  } finally {
+    await disconnectDB();
+  }
+}
+
+export function verifyToken(token: string): { id: string; username: string } | null {
+  return verifySimpleToken(token);
+}
+
+// Initialize admin user if not exists
 export async function initAdminUser(): Promise<void> {
-  console.log('Admin initialization is now handled by the server');
+  try {
+    await connectDB();
+    const adminExists = await Admin.findOne({ username: 'admin' });
+    
+    if (!adminExists) {
+      const admin = new Admin({
+        username: 'admin',
+        password: 'admin123' // This will be hashed by the pre-save hook
+      });
+      
+      await admin.save();
+      console.log('Admin user created');
+    }
+  } catch (error) {
+    console.error('Error initializing admin user:', error);
+  } finally {
+    await disconnectDB();
+  }
 }
