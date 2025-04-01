@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from '@/components/ui/use-toast';
-import { Shield } from 'lucide-react';
+import { Shield, Loader2 } from 'lucide-react';
 import { loginAdmin } from '@/api/auth';
 
 const AdminLogin = () => {
@@ -38,6 +38,7 @@ const AdminLogin = () => {
           description: "Invalid username or password.",
           variant: "destructive"
         });
+        setIsLoading(false);
         return;
       }
       
@@ -106,7 +107,12 @@ const AdminLogin = () => {
               className="w-full bg-medical-600 hover:bg-medical-700"
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : "Sign In"}
             </Button>
           </CardFooter>
         </form>

@@ -3,27 +3,12 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import Admin from '../models/Admin';
+import { initAdminUser } from '../utils/initAdmin';
 
 const JWT_SECRET = 'medishopper-secret-key'; // In production, use environment variable
 
-// Initialize admin user
-export const initAdminUser = async () => {
-  try {
-    const adminCount = await Admin.countDocuments();
-    
-    if (adminCount === 0) {
-      const admin = new Admin({
-        username: 'admin',
-        password: 'admin123' // Will be hashed by pre-save hook
-      });
-      
-      await admin.save();
-      console.log('Admin user created successfully');
-    }
-  } catch (error) {
-    console.error('Error initializing admin user:', error);
-  }
-};
+// Initialize admin user - exported to be called during server startup
+export { initAdminUser };
 
 // Admin login
 export const loginAdmin = async (req: Request, res: Response) => {

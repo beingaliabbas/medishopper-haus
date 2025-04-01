@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -5,22 +6,26 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from '@/components/ui/use-toast';
-import { LogOut, Package, RefreshCw } from 'lucide-react';
-import { getOrders, updateOrderStatus } from '@/api/orders';
-import { OrderData } from '@/api/orders';
+import { LogOut, Package, RefreshCw, AlertCircle } from 'lucide-react';
+import { getOrders, updateOrderStatus, OrderData } from '@/api/orders';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
   const navigate = useNavigate();
 
   const fetchOrders = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const data = await getOrders();
       setOrders(data);
     } catch (error) {
       console.error('Error fetching orders:', error);
+      setError('Failed to fetch orders. Please check your connection and try again.');
       toast({
         title: "Error",
         description: "Failed to fetch orders. Please try again.",
@@ -125,6 +130,18 @@ const AdminOrders = () => {
               <div className="flex justify-center py-8">
                 <RefreshCw className="h-8 w-8 animate-spin text-medical-600" />
               </div>
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center py-8 text-gray-500">
+                <AlertCircle className="h-8 w-8 text-red-500 mb-2" />
+                <p>{error}</p>
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={fetchOrders}
+                >
+                  Try Again
+                </Button>
+              </div>
             ) : orders.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 No orders found.
@@ -181,6 +198,21 @@ const AdminOrders = () => {
           </CardContent>
         </Card>
       </main>
+
+      {/* Error Dialog */}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Connection Error</DialogTitle>
+            <DialogDescription>
+              There was a problem connecting to the server. Please check your connection and try again.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end">
+            <Button onClick={() => setOpenDialog(false)}>Close</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

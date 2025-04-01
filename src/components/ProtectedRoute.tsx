@@ -21,6 +21,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         return;
       }
       
+      // Use the verifyToken function to check if token exists
       const decodedToken = verifyToken(token);
       setIsAuthenticated(!!decodedToken);
     };
