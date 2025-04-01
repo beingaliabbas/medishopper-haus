@@ -1,8 +1,7 @@
 
-import { connectDB, disconnectDB } from '../utils/db';
+import { IOrderItem } from '../models/Order';
 
 // Define the Order interface without mongoose specific properties
-// This fixes the TypeScript error by creating a browser-compatible version
 export interface OrderData {
   _id: string;
   orderNumber: string;
@@ -16,15 +15,7 @@ export interface OrderData {
     zipCode: string;
     country: string;
   };
-  items: Array<{
-    productId: string;
-    name: string;
-    price: number;
-    quantity: number;
-    image: string;
-    selectedSize?: string;
-    selectedColor?: string;
-  }>;
+  items: IOrderItem[];
   paymentMethod: string;
   subtotal: number;
   shipping: number;
@@ -35,9 +26,7 @@ export interface OrderData {
   updatedAt: Date;
 }
 
-// In-memory storage for orders in browser environment
-let orders: OrderData[] = [];
-let nextOrderId = 1;
+const API_URL = 'http://localhost:5000/api';
 
 export async function createOrder(orderData: {
   orderNumber: string;
@@ -51,15 +40,7 @@ export async function createOrder(orderData: {
     zipCode: string;
     country: string;
   };
-  items: Array<{
-    productId: string;
-    name: string;
-    price: number;
-    quantity: number;
-    image: string;
-    selectedSize?: string;
-    selectedColor?: string;
-  }>;
+  items: IOrderItem[];
   paymentMethod: string;
   subtotal: number;
   shipping: number;
@@ -67,86 +48,107 @@ export async function createOrder(orderData: {
   total: number;
 }): Promise<OrderData> {
   try {
-    await connectDB();
+    const response = await fetch(`${API_URL}/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(orderData)
+    });
     
-    // Create an order object with all the required fields
-    const order: OrderData = {
-      _id: String(nextOrderId++),
-      orderNumber: orderData.orderNumber,
-      customerInfo: orderData.customerInfo,
-      items: orderData.items,
-      paymentMethod: orderData.paymentMethod,
-      subtotal: orderData.subtotal,
-      shipping: orderData.shipping,
-      tax: orderData.tax,
-      total: orderData.total,
-      status: 'confirmed',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to create order');
+    }
     
-    // Add to our in-memory storage
-    orders.push(order);
-    
-    console.log('Order created successfully:', order);
-    return order;
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Error creating order:', error);
     throw error;
-  } finally {
-    await disconnectDB();
   }
 }
 
 export async function getOrders(): Promise<OrderData[]> {
   try {
-    await connectDB();
-    return [...orders].sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    const token = localStorage.getItem('admin-token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+    
+    const response = await fetch(`${API_URL}/orders`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to fetch orders');
+    }
+    
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Error fetching orders:', error);
     throw error;
-  } finally {
-    await disconnectDB();
   }
 }
 
 export async function getOrderById(id: string): Promise<OrderData | null> {
   try {
-    await connectDB();
-    const order = orders.find(o => o._id === id);
-    return order || null;
+    const token = localStorage.getItem('admin-token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+    
+    const response = await fetch(`${API_URL}/orders/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to fetch order');
+    }
+    
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Error fetching order:', error);
     throw error;
-  } finally {
-    await disconnectDB();
   }
 }
 
 export async function updateOrderStatus(id: string, status: OrderData['status']): Promise<OrderData | null> {
   try {
-    await connectDB();
-    const orderIndex = orders.findIndex(o => o._id === id);
-    
-    if (orderIndex === -1) {
-      return null;
+    const token = localStorage.getItem('admin-token');
+    if (!token) {
+      throw new Error('No authentication token found');
     }
     
-    const updatedOrder = {
-      ...orders[orderIndex],
-      status,
-      updatedAt: new Date()
-    };
+    const response = await fetch(`${API_URL}/orders/${id}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    });
     
-    orders[orderIndex] = updatedOrder;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update order status');
+    }
     
-    return updatedOrder;
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Error updating order status:', error);
     throw error;
-  } finally {
-    await disconnectDB();
   }
 }
