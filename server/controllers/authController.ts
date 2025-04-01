@@ -20,15 +20,22 @@ export const loginAdmin = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Please provide username and password' });
     }
     
+    console.log(`Attempting to find admin with username: ${username}`);
+    
     // Find admin by username
     const admin = await Admin.findOne({ username });
     
     if (!admin) {
+      console.log('Admin not found');
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     
+    console.log('Admin found, comparing password');
+    
     // Compare password
-    const isPasswordValid = await admin.comparePassword(password);
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    
+    console.log('Password valid:', isPasswordValid);
     
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -40,6 +47,8 @@ export const loginAdmin = async (req: Request, res: Response) => {
       JWT_SECRET,
       { expiresIn: '1d' }
     );
+    
+    console.log('Login successful, token generated');
     
     res.json({
       token,

@@ -5,6 +5,8 @@ const API_URL = 'http://localhost:5000/api';
 // Function to login admin
 export async function loginAdmin(username: string, password: string): Promise<string | null> {
   try {
+    console.log('Attempting login with:', { username, password });
+    
     const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
@@ -13,11 +15,14 @@ export async function loginAdmin(username: string, password: string): Promise<st
       body: JSON.stringify({ username, password })
     });
     
+    const data = await response.json();
+    console.log('Login response:', data);
+    
     if (!response.ok) {
+      console.error('Login failed:', data.message);
       return null;
     }
     
-    const data = await response.json();
     return data.token;
   } catch (error) {
     console.error('Login error:', error);

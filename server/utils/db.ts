@@ -1,8 +1,8 @@
 
 import mongoose from 'mongoose';
 
-// MongoDB connection string from your provided URI
-const MONGODB_URI = 'mongodb://aliabbaszounr4:Aliabbas321@cluster0-shard-00-00.ze5uw.mongodb.net:27017,cluster0-shard-00-01.ze5uw.mongodb.net:27017,cluster0-shard-00-02.ze5uw.mongodb.net:27017/whatsapp_sessions?replicaSet=atlas-bdpqnp-shard-0&ssl=true&authSource=admin';
+// MongoDB connection string with the correct database name
+const MONGODB_URI = 'mongodb://aliabbaszounr4:Aliabbas321@cluster0-shard-00-00.ze5uw.mongodb.net:27017,cluster0-shard-00-01.ze5uw.mongodb.net:27017,cluster0-shard-00-02.ze5uw.mongodb.net:27017/medi-com?replicaSet=atlas-bdpqnp-shard-0&ssl=true&authSource=admin';
 
 export const connectDB = async () => {
   try {

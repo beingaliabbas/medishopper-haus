@@ -6,19 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from '@/components/ui/use-toast';
-import { Shield, Loader2 } from 'lucide-react';
+import { Shield, Loader2, AlertTriangle } from 'lucide-react';
 import { loginAdmin } from '@/api/auth';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const AdminLogin = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     
     if (!username || !password) {
+      setError("Please enter both username and password.");
       toast({
         title: "Missing Fields",
         description: "Please enter both username and password.",
@@ -33,6 +37,7 @@ const AdminLogin = () => {
       const token = await loginAdmin(username, password);
       
       if (!token) {
+        setError("Invalid username or password. Please try again.");
         toast({
           title: "Login Failed",
           description: "Invalid username or password.",
@@ -52,6 +57,7 @@ const AdminLogin = () => {
       navigate('/admin/orders');
     } catch (error) {
       console.error('Login error:', error);
+      setError("An error occurred during login. Please try again.");
       toast({
         title: "Login Error",
         description: "An error occurred during login. Please try again.",
@@ -78,6 +84,13 @@ const AdminLogin = () => {
         </CardHeader>
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Login Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input
