@@ -6,7 +6,8 @@ export const products: Product[] = [
     id: 'scrub-1',
     name: 'Premium Medical Scrub Set',
     category: 'scrubs',
-    price: 49.99,
+    price: 13999,
+    priceUSD: 49.99,
     image: 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
     images: [
       'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
@@ -29,7 +30,8 @@ export const products: Product[] = [
     id: 'scrub-2',
     name: 'Ultra-Soft Scrub Top',
     category: 'scrubs',
-    price: 29.99,
+    price: 8399,
+    priceUSD: 29.99,
     image: 'https://images.unsplash.com/photo-1643202948526-ed86f0c0ba0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
     images: [
       'https://images.unsplash.com/photo-1643202948526-ed86f0c0ba0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
@@ -51,7 +53,8 @@ export const products: Product[] = [
     id: 'scrub-3',
     name: 'Performance Stretch Scrub Pants',
     category: 'scrubs',
-    price: 32.99,
+    price: 9239,
+    priceUSD: 32.99,
     image: 'https://images.unsplash.com/photo-1614630982169-e89202c5e045?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
     images: [
       'https://images.unsplash.com/photo-1614630982169-e89202c5e045?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
@@ -73,7 +76,8 @@ export const products: Product[] = [
     id: 'apron-1',
     name: 'Protective Medical Apron',
     category: 'aprons',
-    price: 24.99,
+    price: 6999,
+    priceUSD: 24.99,
     image: 'https://images.unsplash.com/photo-1590337318156-2ed149175a1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
     images: [
       'https://images.unsplash.com/photo-1590337318156-2ed149175a1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
@@ -95,7 +99,8 @@ export const products: Product[] = [
     id: 'apron-2',
     name: 'Disposable Medical Aprons (Pack of 100)',
     category: 'aprons',
-    price: 49.99,
+    price: 13999,
+    priceUSD: 49.99,
     image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
     images: [
       'https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
@@ -117,7 +122,8 @@ export const products: Product[] = [
     id: 'ot-dress-1',
     name: 'Sterile OT Surgical Gown',
     category: 'ot-dresses',
-    price: 35.99,
+    price: 10079,
+    priceUSD: 35.99,
     image: 'https://images.unsplash.com/photo-1579684288361-5c1a2957cc28?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
     images: [
       'https://images.unsplash.com/photo-1579684288361-5c1a2957cc28?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
@@ -139,7 +145,8 @@ export const products: Product[] = [
     id: 'ot-dress-2',
     name: 'Reusable Surgical OT Dress Set',
     category: 'ot-dresses',
-    price: 65.99,
+    price: 18479,
+    priceUSD: 65.99,
     image: 'https://images.unsplash.com/photo-1603855873822-0963209b5add?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
     images: [
       'https://images.unsplash.com/photo-1603855873822-0963209b5add?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
@@ -161,7 +168,8 @@ export const products: Product[] = [
     id: 'stethoscope-1',
     name: 'Professional Cardiology Stethoscope',
     category: 'stethoscopes',
-    price: 119.99,
+    price: 33599,
+    priceUSD: 119.99,
     image: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
     images: [
       'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
@@ -184,7 +192,8 @@ export const products: Product[] = [
     id: 'stethoscope-2',
     name: 'Classic Lightweight Stethoscope',
     category: 'stethoscopes',
-    price: 49.99,
+    price: 13999,
+    priceUSD: 49.99,
     image: 'https://images.unsplash.com/photo-1584982751601-97dcc096659c?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',
     images: [
       'https://images.unsplash.com/photo-1584982751601-97dcc096659c?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80',

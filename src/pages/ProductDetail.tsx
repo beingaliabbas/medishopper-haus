@@ -120,7 +120,12 @@ const ProductDetail = () => {
             {/* Product Details */}
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-              <p className="text-2xl font-semibold text-medical-700 mb-6">${product.price.toFixed(2)}</p>
+              <div className="flex items-center gap-2 mb-6">
+                <p className="text-2xl font-semibold text-medical-700">PKR {product.price.toLocaleString()}</p>
+                {product.priceUSD && (
+                  <p className="text-sm text-gray-500">(USD ${product.priceUSD.toFixed(2)})</p>
+                )}
+              </div>
               
               <div className="mb-6">
                 <p className="text-gray-700">{product.shortDescription}</p>
@@ -243,7 +248,7 @@ const ProductDetail = () => {
                   <span className="font-medium">Delivery Information</span>
                 </div>
                 <p className="text-sm text-gray-600">
-                  Free shipping on all orders over $75. Standard delivery in 3-5 business days.
+                  Free shipping on all orders over PKR 20,000. Standard delivery in 3-5 business days within Pakistan.
                 </p>
               </div>
             </div>

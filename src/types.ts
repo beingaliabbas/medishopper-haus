@@ -4,6 +4,7 @@ export interface Product {
   name: string;
   category: 'scrubs' | 'aprons' | 'ot-dresses' | 'stethoscopes';
   price: number;
+  priceUSD?: number;
   image: string;
   images?: string[];
   shortDescription: string;

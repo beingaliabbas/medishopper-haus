@@ -52,7 +52,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <p className="text-sm text-gray-500 line-clamp-2">{product.shortDescription}</p>
         </div>
         <div className="mt-4 flex justify-between items-center">
-          <span className="text-lg font-semibold text-gray-900">${product.price.toFixed(2)}</span>
+          <div>
+            <span className="text-lg font-semibold text-gray-900">PKR {product.price.toLocaleString()}</span>
+            {product.priceUSD && (
+              <div className="text-xs text-gray-500">${product.priceUSD.toFixed(2)}</div>
+            )}
+          </div>
           <Button 
             onClick={handleAddToCart} 
             disabled={product.stock <= 0}

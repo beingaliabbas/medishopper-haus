@@ -114,7 +114,7 @@ const ContactPage = () => {
                     <Phone className="h-5 w-5 text-medical-600 mt-0.5 mr-3" />
                     <div>
                       <h3 className="font-medium text-gray-900">Phone</h3>
-                      <p className="text-gray-600">+1 (555) 123-4567</p>
+                      <p className="text-gray-600">+92 348 346 9617</p>
                     </div>
                   </div>
                   
@@ -122,7 +122,7 @@ const ContactPage = () => {
                     <Mail className="h-5 w-5 text-medical-600 mt-0.5 mr-3" />
                     <div>
                       <h3 className="font-medium text-gray-900">Email</h3>
-                      <p className="text-gray-600">support@medishopper.com</p>
+                      <p className="text-gray-600">aliabbaszounr213@gmail.com</p>
                     </div>
                   </div>
                   
@@ -131,10 +131,8 @@ const ContactPage = () => {
                     <div>
                       <h3 className="font-medium text-gray-900">Address</h3>
                       <p className="text-gray-600">
-                        123 Medical Center Drive<br />
-                        Suite 456<br />
-                        Healthcare City, HC 12345<br />
-                        United States
+                        Hyderabad, Sindh<br />
+                        Pakistan
                       </p>
                     </div>
                   </div>
@@ -144,9 +142,8 @@ const ContactPage = () => {
                     <div>
                       <h3 className="font-medium text-gray-900">Business Hours</h3>
                       <p className="text-gray-600">
-                        Monday - Friday: 9:00 AM - 6:00 PM<br />
-                        Saturday: 10:00 AM - 4:00 PM<br />
-                        Sunday: Closed
+                        Open 24/7<br />
+                        Always available to serve you
                       </p>
                     </div>
                   </div>
