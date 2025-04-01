@@ -11,7 +11,9 @@ export interface IOrderItem {
   selectedColor?: string;
 }
 
-export interface IOrder extends Document {
+// For browser compatibility, we need to separate the Document interface
+export interface IOrder {
+  _id: string;
   orderNumber: string;
   customerInfo: {
     fullName: string;
@@ -34,6 +36,8 @@ export interface IOrder extends Document {
   updatedAt: Date;
 }
 
+// These Schema definitions would be used in a Node.js environment
+// They are kept here for reference and for potential server-side code
 const OrderItemSchema = new Schema({
   productId: { type: String, required: true },
   name: { type: String, required: true },
@@ -74,6 +78,8 @@ const OrderSchema = new Schema({
   timestamps: true
 });
 
-const Order = mongoose.model<IOrder>('Order', OrderSchema);
+// This would only work in a Node.js environment
+// For browser, we're using our in-memory implementation
+const Order = mongoose.models.Order || mongoose.model<IOrder & Document>('Order', OrderSchema);
 
 export default Order;

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -8,10 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from '@/components/ui/use-toast';
 import { LogOut, Package, RefreshCw } from 'lucide-react';
 import { getOrders, updateOrderStatus } from '@/api/orders';
-import { IOrder } from '@/models/Order';
+import { OrderData } from '@/api/orders';
 
 const AdminOrders = () => {
-  const [orders, setOrders] = useState<IOrder[]>([]);
+  const [orders, setOrders] = useState<OrderData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -36,7 +35,7 @@ const AdminOrders = () => {
     fetchOrders();
   }, []);
 
-  const handleStatusChange = async (orderId: string, status: IOrder['status']) => {
+  const handleStatusChange = async (orderId: string, status: OrderData['status']) => {
     try {
       const updatedOrder = await updateOrderStatus(orderId, status);
       
@@ -44,7 +43,7 @@ const AdminOrders = () => {
         // Update local state
         setOrders(prevOrders => 
           prevOrders.map(order => 
-            order._id === orderId ? { ...order, status } as IOrder : order
+            order._id === orderId ? { ...order, status } as OrderData : order
           )
         );
         
@@ -160,7 +159,7 @@ const AdminOrders = () => {
                         <TableCell className="text-right">
                           <Select
                             value={order.status}
-                            onValueChange={(value) => handleStatusChange(order._id, value as IOrder['status'])}
+                            onValueChange={(value) => handleStatusChange(order._id, value as OrderData['status'])}
                           >
                             <SelectTrigger className="w-[130px]">
                               <SelectValue placeholder="Change status" />

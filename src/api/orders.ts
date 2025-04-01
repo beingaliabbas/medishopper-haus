@@ -1,9 +1,42 @@
 
-import { IOrder } from '../models/Order';
 import { connectDB, disconnectDB } from '../utils/db';
 
+// Define the Order interface without mongoose specific properties
+// This fixes the TypeScript error by creating a browser-compatible version
+export interface OrderData {
+  _id: string;
+  orderNumber: string;
+  customerInfo: {
+    fullName: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  items: Array<{
+    productId: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image: string;
+    selectedSize?: string;
+    selectedColor?: string;
+  }>;
+  paymentMethod: string;
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+  status: 'confirmed' | 'processing' | 'shipped' | 'delivered';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // In-memory storage for orders in browser environment
-let orders: IOrder[] = [];
+let orders: OrderData[] = [];
 let nextOrderId = 1;
 
 export async function createOrder(orderData: {
@@ -32,12 +65,12 @@ export async function createOrder(orderData: {
   shipping: number;
   tax: number;
   total: number;
-}): Promise<IOrder> {
+}): Promise<OrderData> {
   try {
     await connectDB();
     
-    // Create an order object with all the required fields from IOrder
-    const order: IOrder = {
+    // Create an order object with all the required fields
+    const order: OrderData = {
       _id: String(nextOrderId++),
       orderNumber: orderData.orderNumber,
       customerInfo: orderData.customerInfo,
@@ -65,7 +98,7 @@ export async function createOrder(orderData: {
   }
 }
 
-export async function getOrders(): Promise<IOrder[]> {
+export async function getOrders(): Promise<OrderData[]> {
   try {
     await connectDB();
     return [...orders].sort((a, b) => 
@@ -79,7 +112,7 @@ export async function getOrders(): Promise<IOrder[]> {
   }
 }
 
-export async function getOrderById(id: string): Promise<IOrder | null> {
+export async function getOrderById(id: string): Promise<OrderData | null> {
   try {
     await connectDB();
     const order = orders.find(o => o._id === id);
@@ -92,7 +125,7 @@ export async function getOrderById(id: string): Promise<IOrder | null> {
   }
 }
 
-export async function updateOrderStatus(id: string, status: IOrder['status']): Promise<IOrder | null> {
+export async function updateOrderStatus(id: string, status: OrderData['status']): Promise<OrderData | null> {
   try {
     await connectDB();
     const orderIndex = orders.findIndex(o => o._id === id);
@@ -101,13 +134,15 @@ export async function updateOrderStatus(id: string, status: IOrder['status']): P
       return null;
     }
     
-    orders[orderIndex] = {
+    const updatedOrder = {
       ...orders[orderIndex],
       status,
       updatedAt: new Date()
     };
     
-    return orders[orderIndex];
+    orders[orderIndex] = updatedOrder;
+    
+    return updatedOrder;
   } catch (error) {
     console.error('Error updating order status:', error);
     throw error;
